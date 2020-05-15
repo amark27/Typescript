@@ -41,3 +41,52 @@ class MyPoint implements Point { // ERROR : missing member `z`
 
 
 var foo: MyPoint = new MyPoint();
+
+//--------------------------------------
+
+//adding a function definition to an interface
+interface SearchFunc {
+    (source: string, subString: string): boolean;
+}
+
+let mySearch: SearchFunc;
+mySearch = function(source: string, subString: string) {
+    let result = source.search(subString);
+    return result > -1;
+}
+
+//---------------------------------------
+
+//writing an interface where the class needs to implement a certain class constructor,
+//is more complicated. The constructor is part of the static side of the class, not the instance side.
+//Need to create two interfaces so we can work on only the static side, before the instance is made
+
+//createClock checks if the class object has the correct constructor signature
+//this prevents clocks that don't have the right signature from being created
+
+interface ClockConstructor {
+    new (hour: number, minute: number): ClockInterface;
+}
+interface ClockInterface {
+    tick(): void;
+}
+
+function createClock(ctor: ClockConstructor, hour: number, minute: number): ClockInterface {
+    return new ctor(hour, minute);
+}
+
+class DigitalClock implements ClockInterface {
+    constructor(h: number, m: number) { }
+    tick() {
+        console.log("beep beep");
+    }
+}
+class AnalogClock implements ClockInterface {
+    constructor(h: number, m: number) { }
+    tick() {
+        console.log("tick tock");
+    }
+}
+
+let digital = createClock(DigitalClock, 12, 17);
+let analog = createClock(AnalogClock, 7, 32);
